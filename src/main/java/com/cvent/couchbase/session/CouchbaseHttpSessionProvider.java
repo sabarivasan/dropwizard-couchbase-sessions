@@ -1,6 +1,6 @@
 package com.cvent.couchbase.session;
 
-import com.cvent.couchbase.session.CouchbaseSessionManager.CouchbaseHttpSession;
+import com.cvent.couchbase.session.CouchbaseSessionDataStore.CouchbaseSessionData;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -32,16 +32,19 @@ public class CouchbaseHttpSessionProvider implements InjectableProvider<Couchbas
 
     @Override
     public Injectable<?> getInjectable(ComponentContext ic, final CouchbaseSession session, Parameter parameter) {
-        if (parameter.getParameterClass().isAssignableFrom(CouchbaseHttpSession.class)) {
+        if (parameter.getParameterClass().isAssignableFrom(CouchbaseSessionData.class)) {
             return () -> {
                 final HttpServletRequest req = request.get();
                 if (req != null) {
-                    CouchbaseHttpSession couchbaseHttpSession = (CouchbaseHttpSession) req.getSession(session.create());
+
+                    WrapperSessionCache.CouchbaseSession couchSession =
+                            (WrapperSessionCache.CouchbaseSession) req.getSession(session.create());
+                    CouchbaseSessionData couchbaseSessionData = (CouchbaseSessionData) couchSession.getSessionData();
                     if (session.write()) {
-                        couchbaseHttpSession.setWrite(true);
+                        couchbaseSessionData.setWrite(true);
                     }
-                    
-                    return couchbaseHttpSession;
+
+                    return couchbaseSessionData;
                 }
                 return null;
             };
