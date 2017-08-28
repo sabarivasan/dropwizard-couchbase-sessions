@@ -1,54 +1,75 @@
 package com.cvent.couchbase.session;
 
 import com.cvent.couchbase.session.CouchbaseSessionDataStore.CouchbaseSessionData;
-import com.sun.jersey.api.model.Parameter;
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
+import org.eclipse.jetty.server.session.SessionData;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
 
 /**
  * Provides the HttpSession entity for any resource annotated with @CouchbaseSession annotated method parameter
  * 
  * @author bryan
  */
-@Provider
-public class CouchbaseHttpSessionProvider implements InjectableProvider<CouchbaseSession, Parameter> {
 
-    private final ThreadLocal<HttpServletRequest> request;
+public class CouchbaseHttpSessionProvider implements InjectionResolver<CouchbaseSession> {
 
-    public CouchbaseHttpSessionProvider(@Context ThreadLocal<HttpServletRequest> request) {
-        this.request = request;
+    private final HttpServletRequest req;
+
+    @Inject
+    public CouchbaseHttpSessionProvider(HttpServletRequest request) {
+        this.req = request;
     }
 
-    @Override
-    public ComponentScope getScope() {
-        return ComponentScope.PerRequest;
-    }
+//    @Override
+//    public Injectable<?> getInjectable(ComponentContext ic, final CouchbaseSession session, Parameter parameter) {
+//        if (parameter.getParameterClass().isAssignableFrom(CouchbaseSessionData.class)) {
+//            return () -> {
+//                final HttpServletRequest req = this.req.get();
+//                if (req != null) {
+//                    WrapperSessionCache.CouchbaseSession couchSession =
+//                            (WrapperSessionCache.CouchbaseSession) req.getSession(session.create());
+//                    CouchbaseSessionData couchbaseSessionData = (CouchbaseSessionData) couchSession.getSessionData();
+//                    if (session.write()) {
+//                        couchbaseSessionData.setWrite(true);
+//                    }
+//
+//                    return couchbaseSessionData;
+//                }
+//                return null;
+//            };
+//        }
+//        return null;
+//    }
 
     @Override
-    public Injectable<?> getInjectable(ComponentContext ic, final CouchbaseSession session, Parameter parameter) {
-        if (parameter.getParameterClass().isAssignableFrom(CouchbaseSessionData.class)) {
-            return () -> {
-                final HttpServletRequest req = request.get();
-                if (req != null) {
-
-                    WrapperSessionCache.CouchbaseSession couchSession =
-                            (WrapperSessionCache.CouchbaseSession) req.getSession(session.create());
-                    CouchbaseSessionData couchbaseSessionData = (CouchbaseSessionData) couchSession.getSessionData();
-                    if (session.write()) {
-                        couchbaseSessionData.setWrite(true);
-                    }
-
-                    return couchbaseSessionData;
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        if (injectee.getRequiredType().getClass().isAssignableFrom(SessionData.class) && req != null) {
+                CouchbaseSession session = injectee.getParent().getAnnotation(CouchbaseSession.class);
+                WrapperSessionCache.CouchbaseSession couchSession =
+                        (WrapperSessionCache.CouchbaseSession) req.getSession(session.create());
+                CouchbaseSessionData couchbaseSessionData = (CouchbaseSessionData) couchSession.getSessionData();
+                if (session.write()) {
+                    couchbaseSessionData.setWrite(true);
                 }
-                return null;
-            };
+                return couchbaseSessionData;
+        } else {
+            return null;
         }
-        return null;
     }
+
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return false;
+    }
+
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return true;
+    }
+
+
 }
