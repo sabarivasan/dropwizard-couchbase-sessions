@@ -12,7 +12,7 @@
     <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>dropwizard-couchbase-sessions-dw1x</name>
+    <name>dropwizard-couchbase-sessions</name>
     <description>HttpSession management for dropwizard applications using Couchbase.</description>
     <url>https://github.com/cvent/dropwizard-couchbase-sessions</url>
 
@@ -44,48 +44,24 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <!--version>${jackson.version}</version-->
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <!--version>${jackson.version}</version-->
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.orbit</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>3.0.0.v201112011016</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <!--version>9.0.7.v20131107</version-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <!--version>1.7.6</version-->
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
             <version>${jersey-server.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>${jersey.version}</version>
-        </dependency-->
     </dependencies>
 
     <scm>
