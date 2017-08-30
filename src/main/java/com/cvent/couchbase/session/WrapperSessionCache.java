@@ -8,7 +8,10 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This wrapper exists only so we can expose SessionData from
+ * This wrapper exists only so we can create a Session that can expose SessionData from Session.
+ * Jetty's Session.getSessionData() is unfortunately protected
+ *
+ * @author sabarivasan
  */
 public class WrapperSessionCache extends DefaultSessionCache {
 
