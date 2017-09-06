@@ -14,6 +14,8 @@ import java.util.Map;
  * @author sabarivasan
  */
 public final class CouchbaseSessionData extends SessionData {
+    // The following 2 pieces of information (context path and vhost) are passed by Jetty when a new SessionData object
+    // is created. These are stored as attributes and persisted in Couchbase and set on deserialization
     private static final String CPATH = "SESSION_CPATH";
     private static final String VHOST = "SESSION_VHOST";
 
